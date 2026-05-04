@@ -21,8 +21,9 @@ export default function ProductDetailPage() {
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
 
-  useEffect(() => { fetchProduct(id); setQuantity(1); loadReviews(); }, [id]);
+  useEffect(() => { fetchProduct(id); setQuantity(1); loadReviews(); setActiveImage(0); }, [id]);
   useEffect(() => { if (product) fetchProducts({ category: product.category, limit: 4 }); }, [product?._id]);
 
   const loadReviews = async () => {
@@ -64,16 +65,31 @@ export default function ProductDetailPage() {
     <div className="min-h-screen pt-24 pb-12 px-4 page-enter">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10 mb-16">
-          {/* Image */}
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="relative">
-            <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50">
-              <img src={getImageUrl(product.images?.[0] || '/images/cake.png')} alt={product.name} className="w-full h-full object-cover" />
+          {/* Image Gallery */}
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-4">
+            <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50">
+              <img src={getImageUrl(product.images?.[activeImage] || product.images?.[0] || '/images/cake.png')} alt={product.name} className="w-full h-full object-cover transition-opacity duration-300" />
+              <div className="absolute top-4 left-4 flex flex-col gap-2">
+                {product.isBestseller && <span className="badge-bestseller shadow-sm">⭐ Bestseller</span>}
+                {product.isEggless && <span className="badge-eggless shadow-sm">🥚 Eggless</span>}
+                {product.isVeg && <span className="badge-veg shadow-sm">🌿 Veg</span>}
+              </div>
             </div>
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
-              {product.isBestseller && <span className="badge-bestseller">⭐ Bestseller</span>}
-              {product.isEggless && <span className="badge-eggless">🥚 Eggless</span>}
-              {product.isVeg && <span className="badge-veg">🌿 Veg</span>}
-            </div>
+            
+            {/* Thumbnails */}
+            {product.images && product.images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                {product.images.map((img, index) => (
+                  <button 
+                    key={index} 
+                    onClick={() => setActiveImage(index)}
+                    className={`relative shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${activeImage === index ? 'border-primary-500 shadow-md scale-95' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-95'}`}
+                  >
+                    <img src={getImageUrl(img)} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           {/* Details */}

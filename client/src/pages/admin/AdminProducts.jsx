@@ -37,21 +37,34 @@ export default function AdminProducts() {
   };
 
   // Image upload handler
-  const handleImageUpload = async (file) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { toast.error('Please upload an image file'); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return; }
+  const handleImageUpload = async (files) => {
+    if (!files || files.length === 0) return;
+    
+    const fileArray = Array.from(files).slice(0, 5);
+    const validFiles = fileArray.filter(file => {
+      if (!file.type.startsWith('image/')) { toast.error(`${file.name} is not an image`); return false; }
+      if (file.size > 5 * 1024 * 1024) { toast.error(`${file.name} is over 5MB`); return false; }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
+    const currentImages = form.images.filter(img => img !== '');
+    if (currentImages.length + validFiles.length > 5) {
+      toast.error('Maximum 5 images allowed per product');
+      return;
+    }
 
     setUploading(true);
     const formData = new FormData();
-    formData.append('image', file);
+    validFiles.forEach(file => formData.append('images', file));
 
     try {
       const { data } = await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setForm(f => ({ ...f, images: [data.imageUrl] }));
-      toast.success('Image uploaded!');
+      setForm(f => ({ ...f, images: [...currentImages, ...data.imageUrls] }));
+      toast.success(validFiles.length > 1 ? 'Images uploaded!' : 'Image uploaded!');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Upload failed');
     }
@@ -61,13 +74,12 @@ export default function AdminProducts() {
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    handleImageUpload(file);
+    handleImageUpload(e.dataTransfer.files);
   };
 
   const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    handleImageUpload(file);
+    handleImageUpload(e.target.files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
@@ -213,24 +225,52 @@ export default function AdminProducts() {
 
                       {/* Image Upload */}
                       <div className="sm:col-span-2">
-                        <label className="text-sm font-medium text-accent-600 mb-2 block">Product Image</label>
-                        {form.images[0] && (
-                          <div className="mb-3 relative inline-block">
-                            <img src={getImageUrl(form.images[0])} alt="Preview" className="w-32 h-32 object-cover rounded-xl border-2 border-primary-100" />
-                            <button type="button" onClick={() => setForm(f => ({ ...f, images: [''] }))} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600">✕</button>
+                        <label className="text-sm font-medium text-accent-600 mb-2 block">Product Images (Max 5)</label>
+                        
+                        {/* Image Grid */}
+                        {form.images.filter(img => img !== '').length > 0 && (
+                          <div className="flex flex-wrap gap-3 mb-4">
+                            {form.images.filter(img => img !== '').map((img, index) => (
+                              <div key={index} className="relative group">
+                                <img src={getImageUrl(img)} alt={`Preview ${index}`} className="w-24 h-24 object-cover rounded-xl border-2 border-primary-100 shadow-sm" />
+                                <button type="button" onClick={() => {
+                                  const newImages = form.images.filter((_, i) => i !== index);
+                                  setForm(f => ({ ...f, images: newImages.length > 0 ? newImages : [''] }));
+                                }} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-md">✕</button>
+                                {index === 0 && <span className="absolute bottom-1 left-1 bg-accent-600 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">Primary</span>}
+                              </div>
+                            ))}
                           </div>
                         )}
-                        <div onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()} className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${dragOver ? 'border-primary-500 bg-primary-50' : 'border-primary-200 hover:border-primary-400 hover:bg-primary-50/50'}`}>
-                          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
-                          {uploading ? (
-                            <div className="flex flex-col items-center gap-2"><div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" /><p className="text-sm text-mocha">Uploading...</p></div>
-                          ) : (
-                            <div className="flex flex-col items-center gap-2"><FiUploadCloud size={32} className="text-primary-400" /><p className="text-sm font-medium text-accent-600">Drag & drop image here, or click to browse</p><p className="text-xs text-mocha">JPG, PNG, WebP • Max 5MB</p></div>
-                          )}
-                        </div>
+
+                        {/* Upload Dropzone */}
+                        {form.images.filter(img => img !== '').length < 5 && (
+                          <div onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()} className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${dragOver ? 'border-primary-500 bg-primary-50' : 'border-primary-200 hover:border-primary-400 hover:bg-primary-50/50'}`}>
+                            <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} className="hidden" />
+                            {uploading ? (
+                              <div className="flex flex-col items-center gap-2"><div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" /><p className="text-sm text-mocha">Uploading...</p></div>
+                            ) : (
+                              <div className="flex flex-col items-center gap-2"><FiUploadCloud size={32} className="text-primary-400" /><p className="text-sm font-medium text-accent-600">Drag & drop images here, or click to browse</p><p className="text-xs text-mocha">JPG, PNG, WebP • Max 5MB per file • Up to 5 files</p></div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* URL Paste */}
                         <div className="mt-3">
-                          <p className="text-xs text-mocha mb-1">Or paste image URL:</p>
-                          <input value={form.images[0]} onChange={(e) => setForm(f => ({ ...f, images: [e.target.value] }))} className="input-field text-sm" placeholder="https://example.com/image.jpg" />
+                          <p className="text-xs text-mocha mb-1">Or paste image URL (will add to gallery):</p>
+                          <div className="flex gap-2">
+                            <input id="url-input" className="input-field text-sm" placeholder="https://example.com/image.jpg" />
+                            <button type="button" onClick={() => {
+                              const input = document.getElementById('url-input');
+                              if (input.value && form.images.filter(img => img !== '').length < 5) {
+                                const currentImages = form.images.filter(img => img !== '');
+                                setForm(f => ({ ...f, images: [...currentImages, input.value] }));
+                                input.value = '';
+                              } else if (form.images.filter(img => img !== '').length >= 5) {
+                                toast.error('Maximum 5 images allowed');
+                              }
+                            }} className="btn-primary !py-2 !px-4 text-sm whitespace-nowrap">Add URL</button>
+                          </div>
                         </div>
                       </div>
 

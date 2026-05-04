@@ -32,10 +32,10 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB max
 
-router.post('/', protect, admin, upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
-  const imageUrl = `/uploads/products/${req.file.filename}`;
-  res.json({ success: true, imageUrl });
+router.post('/', protect, admin, upload.array('images', 5), (req, res) => {
+  if (!req.files || req.files.length === 0) return res.status(400).json({ message: 'No images uploaded' });
+  const imageUrls = req.files.map(file => `/uploads/products/${file.filename}`);
+  res.json({ success: true, imageUrls });
 });
 
 export default router;
