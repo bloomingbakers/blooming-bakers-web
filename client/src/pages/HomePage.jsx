@@ -31,7 +31,7 @@ export default function HomePage() {
         {/* Mobile Background Image */}
         <div className="absolute inset-0 z-0 lg:hidden block">
           <img src="/images/storefront-mobile.jpg" alt="Storefront" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[4px]"></div>
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px]"></div>
         </div>
 
         {/* Floating Emojis (Desktop Only) */}
