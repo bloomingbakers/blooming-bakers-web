@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingBag, FiHeart, FiMinus, FiPlus, FiStar } from 'react-icons/fi';
 import useProductStore from '../stores/useProductStore';
 import useCartStore from '../stores/useCartStore';
@@ -68,7 +68,29 @@ export default function ProductDetailPage() {
           {/* Image Gallery */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-4">
             <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50">
-              <img src={getImageUrl(product.images?.[activeImage] || product.images?.[0] || '/images/cake.png')} alt={product.name} className="w-full h-full object-cover transition-opacity duration-300" />
+              <AnimatePresence mode="wait">
+                <motion.img 
+                  key={activeImage}
+                  src={getImageUrl(product.images?.[activeImage] || product.images?.[0] || '/images/cake.png')} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover cursor-grab active:cursor-grabbing"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.7}
+                  onDragEnd={(e, { offset }) => {
+                    const swipeThreshold = 50;
+                    if (offset.x < -swipeThreshold && product.images?.length > 1) {
+                      setActiveImage((prev) => (prev + 1) % product.images.length);
+                    } else if (offset.x > swipeThreshold && product.images?.length > 1) {
+                      setActiveImage((prev) => (prev - 1 + product.images.length) % product.images.length);
+                    }
+                  }}
+                />
+              </AnimatePresence>
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {product.isBestseller && <span className="badge-bestseller shadow-sm">⭐ Bestseller</span>}
                 {product.isEggless && <span className="badge-eggless shadow-sm">🥚 Eggless</span>}
