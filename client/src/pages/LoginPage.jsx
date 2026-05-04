@@ -60,7 +60,6 @@ export default function LoginPage() {
           <p className="text-center text-sm text-mocha mt-6">
             Don&apos;t have an account? <Link to="/signup" className="text-primary-500 font-semibold hover:underline">Sign Up</Link>
           </p>
-          <div className="mt-4 p-3 bg-primary-50 rounded-xl text-xs text-mocha text-center">
             <strong>Demo:</strong> admin@bloomingbakers.com / admin123 <br /> tanvi@example.com / password123
           </div>
         </div>
