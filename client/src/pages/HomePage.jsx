@@ -28,7 +28,14 @@ export default function HomePage() {
     <div className="page-enter">
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center bg-gradient-hero overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
+        {/* Mobile Background Image */}
+        <div className="absolute inset-0 z-0 lg:hidden block">
+          <img src="/images/storefront-mobile.jpg" alt="Storefront" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[4px]"></div>
+        </div>
+
+        {/* Floating Emojis (Desktop Only) */}
+        <div className="absolute inset-0 opacity-10 hidden lg:block z-0">
           <div className="absolute top-20 left-10 text-8xl animate-float">🌸</div>
           <div className="absolute bottom-20 right-20 text-6xl animate-float" style={{ animationDelay: '2s' }}>🧁</div>
           <div className="absolute top-40 right-40 text-5xl animate-float" style={{ animationDelay: '4s' }}>🎂</div>
