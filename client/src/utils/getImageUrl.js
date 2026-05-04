@@ -5,7 +5,11 @@ export const getImageUrl = (imagePath) => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const baseUrl = apiUrl.replace('/api', '');
   
-  // Ensure the image path starts with a slash
-  const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${baseUrl}${path}`;
+  // If it's an uploaded image, fetch it from the backend
+  if (imagePath.startsWith('/uploads')) {
+    return `${baseUrl}${imagePath}`;
+  }
+  
+  // Otherwise it's a frontend asset (like /images/cake.png)
+  return imagePath;
 };
