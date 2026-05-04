@@ -270,7 +270,31 @@ export default function Navbar() {
                       {link.name}
                     </Link>
                   ))}
-                  {!user && (
+                  
+                  {/* Logged in mobile links */}
+                  {user ? (
+                    <>
+                      <hr className="my-2 border-primary-50" />
+                      <div className="px-4 py-2 mb-2 bg-primary-50/50 rounded-lg">
+                        <p className="text-xs text-mocha">Logged in as</p>
+                        <p className="font-semibold text-accent-600 truncate">{user.email}</p>
+                      </div>
+                      <Link to="/orders" className="flex items-center gap-3 py-3 px-4 text-accent-600 hover:bg-primary-50 rounded-lg transition-colors font-medium">
+                        <FiPackage size={18} /> My Orders
+                      </Link>
+                      <Link to="/wishlist" className="flex items-center gap-3 py-3 px-4 text-accent-600 hover:bg-primary-50 rounded-lg transition-colors font-medium">
+                        <FiHeart size={18} /> Wishlist
+                      </Link>
+                      {user.role === 'admin' && (
+                        <Link to="/admin" className="flex items-center gap-3 py-3 px-4 text-primary-500 hover:bg-primary-50 rounded-lg transition-colors font-bold">
+                          <FiSettings size={18} /> Admin Panel
+                        </Link>
+                      )}
+                      <button onClick={handleLogout} className="flex items-center gap-3 py-3 px-4 text-red-500 hover:bg-red-50 rounded-lg transition-colors font-medium w-full mt-2">
+                        <FiLogOut size={18} /> Logout
+                      </button>
+                    </>
+                  ) : (
                     <Link
                       to="/login"
                       className="block py-3 px-4 text-primary-500 font-semibold hover:bg-primary-50 rounded-lg transition-colors mt-4"
