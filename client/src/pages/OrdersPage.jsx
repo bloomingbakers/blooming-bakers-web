@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FiPackage, FiClock, FiCheck, FiTruck } from 'react-icons/fi';
 import useOrderStore from '../stores/useOrderStore';
 import Loader from '../components/Loader';
+import { getImageUrl } from '../utils/getImageUrl';
 
 const STATUS_CONFIG = {
   pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700', icon: FiClock },
@@ -70,7 +71,7 @@ export default function OrdersPage() {
                     <div className="space-y-3">
                       {order.items.map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
-                          <img src={item.image || item.product?.images?.[0] || '/images/cake.png'} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
+                          <img src={getImageUrl(item.image || item.product?.images?.[0] || '/images/cake.png')} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
                           <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{item.name}</p><p className="text-xs text-mocha">Qty: {item.quantity}</p></div>
                           <p className="text-sm font-semibold">₹{item.price * item.quantity}</p>
                         </div>

@@ -1,10 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiMinus, FiPlus, FiTrash2, FiShoppingBag } from 'react-icons/fi';
+import { FiX, FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import useCartStore from '../stores/useCartStore';
 import { useState } from 'react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../utils/getImageUrl';
 
 export default function CartDrawer() {
   const { items, isCartOpen, closeCart, removeItem, updateQuantity, getSubtotal, getDeliveryCharge, getDiscount, getTotal, coupon, applyCoupon, removeCoupon } = useCartStore();
@@ -52,7 +53,7 @@ export default function CartDrawer() {
                 <div className="flex-1 overflow-y-auto p-5 space-y-4">
                   {items.map((item) => (
                     <motion.div key={item._id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex gap-4 p-3 bg-cream rounded-xl">
-                      <img src={item.image} alt={item.name} className="w-20 h-20 rounded-lg object-cover" />
+                      <img src={getImageUrl(item.image)} alt={item.name} className="w-20 h-20 rounded-lg object-cover" />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-sm text-accent-700 truncate">{item.name}</h4>
                         <p className="text-primary-500 font-bold mt-1">₹{item.price}</p>

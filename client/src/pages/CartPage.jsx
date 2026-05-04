@@ -5,6 +5,7 @@ import useCartStore from '../stores/useCartStore';
 import { useState } from 'react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../utils/getImageUrl';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getSubtotal, getDeliveryCharge, getDiscount, getTotal, coupon, applyCoupon, removeCoupon } = useCartStore();
@@ -45,7 +46,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <motion.div key={item._id} layout className="flex gap-4 p-4 bg-white rounded-2xl shadow-soft">
-                <img src={item.image} alt={item.name} className="w-24 h-24 rounded-xl object-cover" />
+                <img src={getImageUrl(item.image)} alt={item.name} className="w-24 h-24 rounded-xl object-cover" />
                 <div className="flex-1 min-w-0">
                   <Link to={`/product/${item._id}`} className="font-display font-semibold text-accent-700 hover:text-primary-400 transition-colors">{item.name}</Link>
                   <p className="text-primary-500 font-bold mt-1">₹{item.price} {item.originalPrice > item.price && <span className="text-sm text-mocha line-through font-normal ml-1">₹{item.originalPrice}</span>}</p>

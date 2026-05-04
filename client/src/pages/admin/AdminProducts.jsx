@@ -7,6 +7,7 @@ import useAdminStore from '../../stores/useAdminStore';
 import Loader from '../../components/Loader';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 const EMPTY_FORM = { name: '', description: '', price: '', discountPrice: '', category: 'cakes', images: [''], stock: '', isVeg: true, isEggless: false, weight: '', servings: '', ingredients: '', isFeatured: false, isBestseller: false, tags: '' };
 
@@ -126,7 +127,7 @@ export default function AdminProducts() {
                   <tr key={p._id} className="border-b border-primary-50/50 hover:bg-cream/30">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <img src={p.images?.[0] || '/images/cake.png'} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                        <img src={getImageUrl(p.images?.[0] || '/images/cake.png')} alt="" className="w-10 h-10 rounded-lg object-cover" />
                         <div className="min-w-0">
                           <p className="font-medium truncate max-w-[200px]">{p.name}</p>
                           <p className="text-xs text-mocha">⭐ {p.ratings} ({p.numReviews})</p>
@@ -216,7 +217,7 @@ export default function AdminProducts() {
                         <label className="text-sm font-medium text-accent-600 mb-2 block">Product Image</label>
                         {form.images[0] && (
                           <div className="mb-3 relative inline-block">
-                            <img src={form.images[0]} alt="Preview" className="w-32 h-32 object-cover rounded-xl border-2 border-primary-100" />
+                            <img src={getImageUrl(form.images[0])} alt="Preview" className="w-32 h-32 object-cover rounded-xl border-2 border-primary-100" />
                             <button type="button" onClick={() => setForm(f => ({ ...f, images: [''] }))} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600">✕</button>
                           </div>
                         )}

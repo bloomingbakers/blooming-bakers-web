@@ -10,6 +10,7 @@ import ProductCard from '../components/ProductCard';
 import Loader from '../components/Loader';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../utils/getImageUrl';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -66,7 +67,7 @@ export default function ProductDetailPage() {
           {/* Image */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="relative">
             <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50">
-              <img src={product.images?.[0] || '/images/cake.png'} alt={product.name} className="w-full h-full object-cover" />
+              <img src={getImageUrl(product.images?.[0] || '/images/cake.png')} alt={product.name} className="w-full h-full object-cover" />
             </div>
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product.isBestseller && <span className="badge-bestseller">⭐ Bestseller</span>}

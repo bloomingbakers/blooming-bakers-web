@@ -5,6 +5,8 @@ import useCartStore from '../stores/useCartStore';
 import useAuthStore from '../stores/useAuthStore';
 import toast from 'react-hot-toast';
 
+import { getImageUrl } from '../utils/getImageUrl';
+
 export default function ProductCard({ product }) {
   const { addItem, openCart } = useCartStore();
   const { user, isInWishlist, toggleWishlist } = useAuthStore();
@@ -34,7 +36,7 @@ export default function ProductCard({ product }) {
     <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }} className="product-card group">
       <Link to={`/product/${product._id}`} className="block">
         <div className="relative overflow-hidden aspect-square bg-gradient-to-br from-primary-50 to-secondary-50">
-          <img src={product.images?.[0] || '/images/cake.png'} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          <img src={getImageUrl(product.images?.[0])} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {product.isBestseller && <span className="badge-bestseller text-[10px]">⭐ Bestseller</span>}
             {hasDiscount && <span className="badge bg-red-100 text-red-600 text-[10px]">-{discountPercent}%</span>}
