@@ -50,8 +50,7 @@ export default function AdminProducts() {
       const { data } = await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      const fullUrl = `http://localhost:5000${data.imageUrl}`;
-      setForm(f => ({ ...f, images: [fullUrl] }));
+      setForm(f => ({ ...f, images: [data.imageUrl] }));
       toast.success('Image uploaded!');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Upload failed');
